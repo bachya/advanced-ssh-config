@@ -53,7 +53,7 @@ def header(input_api):
   current_year = int(input_api.time.strftime('%Y'))
   allowed_years = (str(s) for s in reversed(xrange(2011, current_year + 1)))
   years_re = '(' + '|'.join(allowed_years) + ')'
-  license_header = (
+  return (
     r'.*? Copyright %(year)s The Chromium Authors\. '
     r'All rights reserved\.\n'
     r'.*? Use of this source code is governed by a BSD-style license '
@@ -62,7 +62,6 @@ def header(input_api):
   ) % {
     'year': years_re,
   }
-  return license_header
 
 
 def source_file_filter(input_api):
@@ -78,11 +77,12 @@ def source_file_filter(input_api):
 
 
 def CommonChecks(input_api, output_api):
-  results = []
-  results.extend(
-    input_api.canned_checks.CheckChangeHasNoStrayWhitespace(
-      input_api, output_api,
-      source_file_filter=source_file_filter(input_api)))
+  results = list(
+      input_api.canned_checks.CheckChangeHasNoStrayWhitespace(
+          input_api,
+          output_api,
+          source_file_filter=source_file_filter(input_api),
+      ))
   results.extend(
     input_api.canned_checks.CheckLicense(
       input_api, output_api, header(input_api),
